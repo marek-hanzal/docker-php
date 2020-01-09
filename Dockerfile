@@ -31,7 +31,7 @@ RUN \
     make install
 
 # download and build PHP
-WORKDIR /usr/src/php
+WORKDIR /usr/src
 RUN \
     curl -SL "https://php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror" -o php.tar.xz && \
     curl -SL "https://php.net/get/php-$PHP_VERSION.tar.xz.asc/from/this/mirror" -o php.tar.xz.asc
@@ -54,6 +54,8 @@ RUN \
 	&& make -j"$(nproc)" \
 	&& make install
 
+RUN mkdir -p /usr/local/etc/php/conf.d/
+
 # add all required files for the image (configurations, ...)
 ADD rootfs/ /
 
@@ -73,6 +75,8 @@ RUN \
 # take built binaries from build
 COPY --from=build /usr/local/bin/php /usr/local/bin/php
 COPY --from=build /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
+COPY --from=build /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
+COPY --from=build /usr/local/lib/php/ /usr/local/lib/php/
 COPY --from=build /usr/local/etc/ /usr/local/etc/
 COPY --from=build /usr/local/bin/dumb-init /usr/local/bin/dumb-init
 # take composer from official composer imsage
