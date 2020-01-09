@@ -55,14 +55,14 @@ RUN \
 	&& make install
 
 # add all required files for the image (configurations, ...)
-ADD .docker/rootfs/ /
+ADD rootfs/ /
 
 RUN docker-php-ext-install pdo_mysql
 
 # start a new, clean stage (without any heavy dependency)
 FROM debian:jessie as runtime
 
-ADD .docker/rootfs/ /
+ADD rootfs/ /
 
 # install just required dependencies to keep the image as light as possible
 RUN \
