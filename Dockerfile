@@ -61,6 +61,8 @@ RUN mkdir -p /usr/local/etc/php/conf.d/
 # add all required files for the image (configurations, ...)
 ADD rootfs/ /
 
+RUN chmod +x -R /usr/local/bin
+
 RUN docker-php-ext-install \
         pdo_mysql bcmath bz2 hash iconv xml phar pdo_pgsql zip soap sockets mbstring json dom
 
