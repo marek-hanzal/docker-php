@@ -64,7 +64,7 @@ ADD rootfs/ /
 RUN chmod +x -R /usr/local/bin
 
 RUN docker-php-ext-install \
-        pdo_mysql bcmath bz2 hash iconv xml phar pdo_pgsql zip soap sockets mbstring json dom
+        pdo_mysql bcmath bz2 hash iconv intl xml phar pdo_pgsql zip soap sockets mbstring json dom
 
 RUN pecl install xdebug-2.2.7
 
