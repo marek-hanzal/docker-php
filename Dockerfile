@@ -15,7 +15,7 @@ RUN \
         ca-certificates curl libpcre3 librecode0 libmysqlclient-dev libsqlite3-0 libxml2 git zip unzip python-pip bzip2 \
         autoconf file g++ gcc libc-dev make pkg-config re2c xz-utils \
         autoconf2.13 libcurl4-openssl-dev libpcre3-dev libreadline6-dev librecode-dev libsqlite3-dev libssl-dev libxml2-dev \
-        libbz2-dev libpq-dev
+        libbz2-dev libpq-dev libicu-dev
 
 # install dumb-init as it goes from PIP (thus part of build, because pip with python is quite heavy)
 RUN pip install dumb-init
@@ -77,7 +77,8 @@ ADD rootfs/ /
 RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \
-        ca-certificates curl libpcre3 librecode0 libmysqlclient-dev libsqlite3-0 libxml2 git zip unzip bzip2 libpq-dev
+        ca-certificates curl libpcre3 librecode0 libmysqlclient-dev libsqlite3-0 libxml2 git zip unzip bzip2 \
+        libpq-dev libicu-dev
 
 # take built binaries from build
 COPY --from=build /usr/local/bin/php /usr/local/bin/php
