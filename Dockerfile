@@ -95,7 +95,7 @@ RUN \
     php -m
 
 # defualt work directory for an application
-WORKDIR /opt/app
+WORKDIR /var/www
 
 EXPOSE 9000
 
