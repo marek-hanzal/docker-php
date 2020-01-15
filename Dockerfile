@@ -15,7 +15,7 @@ RUN \
         ca-certificates curl libpcre3 librecode0 libmysqlclient-dev libsqlite3-0 libxml2 git zip unzip python-pip bzip2 \
         autoconf file g++ gcc libc-dev make pkg-config re2c xz-utils \
         autoconf2.13 libcurl4-openssl-dev libpcre3-dev libreadline6-dev librecode-dev libsqlite3-dev libssl-dev libxml2-dev \
-        libbz2-dev libpq-dev libicu-dev
+        libbz2-dev libpq-dev libicu-dev libgmp-dev
 
 # install dumb-init as it goes from PIP (thus part of build, because pip with python is quite heavy)
 RUN pip install dumb-init
@@ -63,10 +63,10 @@ ADD rootfs/ /
 
 RUN chmod +x -R /usr/local/bin
 
-RUN docker-php-ext-install \
-        pdo_mysql bcmath bz2 hash iconv intl xml phar pdo_pgsql zip soap sockets mbstring json dom
-
 RUN pecl install xdebug-2.2.7
+
+RUN docker-php-ext-install \
+        pdo_mysql bcmath bz2 iconv intl xml phar pdo_pgsql zip soap sockets mbstring json gmp
 
 # start a new, clean stage (without any heavy dependency)
 FROM debian:jessie as runtime
@@ -78,7 +78,7 @@ RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \
         ca-certificates curl libpcre3 librecode0 libmysqlclient-dev libsqlite3-0 libxml2 git zip unzip bzip2 \
-        libpq-dev libicu-dev
+        libpq-dev libicu-dev libgmp-dev
 
 # take built binaries from build
 COPY --from=build /usr/local/bin/php /usr/local/bin/php
