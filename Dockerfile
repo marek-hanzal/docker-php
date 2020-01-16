@@ -3,9 +3,9 @@ FROM debian:jessie as build
 # setup mandatory environment variables (optimized for PHP 5.3)
 ENV \
     DEBIAN_FRONTEND=noninteractive \
-    OPENSSL_VERSION=1.0.2g \
+    OPENSSL_VERSION=1.0.2u \
     PHP_INI_DIR=/usr/local/etc/php \
-    PHP_VERSION=5.3.27 \
+    PHP_VERSION=5.3.29 \
     ENABLE_XDEBUG=false
 
 # install all required packages for PHP
@@ -15,7 +15,9 @@ RUN \
         ca-certificates curl libpcre3 librecode0 libmysqlclient-dev libsqlite3-0 libxml2 git zip unzip python-pip bzip2 \
         autoconf file g++ gcc libc-dev make pkg-config re2c xz-utils \
         autoconf2.13 libcurl4-openssl-dev libpcre3-dev libreadline6-dev librecode-dev libsqlite3-dev libssl-dev libxml2-dev \
-        libbz2-dev libpq-dev libicu-dev libgmp-dev
+        libbz2-dev libpq-dev libicu-dev libgmp-dev libmcrypt-dev
+
+RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 # install dumb-init as it goes from PIP (thus part of build, because pip with python is quite heavy)
 RUN pip install dumb-init
@@ -48,7 +50,23 @@ RUN \
 		--disable-cgi \
 		--enable-mysqlnd \
 		--with-mysql \
+		--with-pdo_mysql \
+		--enable-pdo_mysql \
+		--with-pdo_pgsql \
+		--enable-pdo_pgsql \
 		--with-curl \
+		--with-bcmath \
+		--enable-bcmath \
+		--with-bz2 \
+		--enable-bz2 \
+		--with-zip \
+		--enable-zip \
+		--with-soap \
+		--enable-soap \
+		--with-sockets \
+		--enable-sockets \
+		--with-mbstring \
+		--enable-mbstring \
 		--with-openssl=/usr/local/ssl \
 		--with-readline \
 		--with-recode \
@@ -65,8 +83,9 @@ RUN chmod +x -R /usr/local/bin
 
 RUN pecl install xdebug-2.2.7
 
+# extensions which are hard to compile with PHP
 RUN docker-php-ext-install \
-        pdo_mysql bcmath bz2 iconv intl xml phar pdo_pgsql zip soap sockets mbstring json gmp
+    gmp intl
 
 # start a new, clean stage (without any heavy dependency)
 FROM debian:jessie as runtime
@@ -78,7 +97,7 @@ RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \
         ca-certificates curl libpcre3 librecode0 libmysqlclient-dev libsqlite3-0 libxml2 git zip unzip bzip2 \
-        libpq-dev libicu-dev libgmp-dev
+        libpq-dev libicu-dev libgmp-dev libmcrypt-dev
 
 # take built binaries from build
 COPY --from=build /usr/local/bin/php /usr/local/bin/php
