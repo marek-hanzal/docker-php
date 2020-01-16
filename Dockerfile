@@ -27,7 +27,7 @@ RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \
         libxml2-dev libssl-dev libsqlite3-dev zlib1g-dev libbz2-dev libcurl4-openssl-dev libonig-dev \
-        libpq-dev libreadline-dev libzip-dev libgmp-dev
+        libpq-dev libreadline-dev libzip-dev libgmp-dev libldap2-dev
 
 # download and build PHP
 WORKDIR /usr/src
@@ -56,6 +56,7 @@ RUN \
 		--with-openssl=/usr/local/ssl \
 		--with-readline \
 		--with-zlib \
+		--with-ldap \
 	&& make -j"$(nproc)" \
 	&& make install
 
@@ -78,7 +79,7 @@ RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \
         ca-certificates curl git \
-        libreadline-dev libpq-dev libxml2-dev libonig-dev libsqlite3-dev libzip-dev
+        libreadline-dev libpq-dev libxml2-dev libonig-dev libsqlite3-dev libzip-dev libldap2-dev
 
 # take built binaries from build
 COPY --from=build /usr/local/bin/php /usr/local/bin/php
