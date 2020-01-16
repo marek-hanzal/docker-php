@@ -29,8 +29,6 @@ RUN \
         libxml2-dev libssl-dev libsqlite3-dev zlib1g-dev libbz2-dev libcurl4-openssl-dev libonig-dev \
         libpq-dev libreadline-dev libzip-dev libgmp-dev
 
-#RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
-
 # download and build PHP
 WORKDIR /usr/src
 RUN \
@@ -69,10 +67,6 @@ RUN pecl install xdebug
 
 # add all required files for the image (configurations, ...)
 ADD rootfs/ /
-
-# extensions which are hard to compile with PHP
-#RUN docker-php-ext-install \
-#    gmp intl
 
 # start a new, clean stage (without any heavy dependency)
 FROM debian as runtime
