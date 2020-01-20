@@ -1,1 +1,10 @@
-    Hello :) !
+
+    Welcome to base PHP image with Nginx!
+
+    Installed:
+    - composer
+    - composer plugin for faster downloads: hirak/prestissimo
+    - xdebug (global script *php-xdebug-enable* and *php-xdebug-disable* available); disabled by default
+
+    Have a nice day :)!
+
