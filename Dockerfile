@@ -12,15 +12,12 @@ ENV \
 RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \
-        ca-certificates curl libpcre3 librecode0 libmysqlclient-dev libsqlite3-0 libxml2 git zip unzip python-pip bzip2 \
+        ca-certificates curl libpcre3 librecode0 libmysqlclient-dev libsqlite3-0 libxml2 git zip unzip bzip2 \
         autoconf file g++ gcc libc-dev make pkg-config re2c xz-utils \
         autoconf2.13 libcurl4-openssl-dev libpcre3-dev libreadline6-dev librecode-dev libsqlite3-dev libssl-dev libxml2-dev \
         libbz2-dev libpq-dev libicu-dev libgmp-dev libmcrypt-dev
 
 RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
-
-# install dumb-init as it goes from PIP (thus part of build, because pip with python is quite heavy)
-RUN pip install dumb-init
 
 # OpenSSL required for PHP build
 WORKDIR /tmp/openssl
@@ -74,6 +71,8 @@ RUN \
 	&& make -j"$(nproc)" \
 	&& make install
 
+COPY --from=composer /usr/bin/composer /usr/local/bin/composer
+
 RUN mkdir -p /usr/local/etc/php/conf.d/
 
 # add all required files for the image (configurations, ...)
@@ -87,6 +86,9 @@ RUN pecl install xdebug-2.2.7
 RUN docker-php-ext-install \
     gmp intl
 
+# install plugin to make composer installs faaaaaaast
+RUN composer global require hirak/prestissimo --no-plugins --no-scripts
+
 # start a new, clean stage (without any heavy dependency)
 FROM debian:jessie as runtime
 
@@ -94,7 +96,7 @@ FROM debian:jessie as runtime
 RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \
-        ca-certificates curl nginx openssh-server \
+        ca-certificates curl nginx openssh-server supervisor \
         libpcre3 librecode0 libmysqlclient-dev libsqlite3-0 libxml2 git zip unzip bzip2 \
         libpq-dev libicu-dev libgmp-dev libmcrypt-dev
 
@@ -104,7 +106,7 @@ COPY --from=build /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
 COPY --from=build /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY --from=build /usr/local/lib/php/ /usr/local/lib/php/
 COPY --from=build /usr/local/etc/ /usr/local/etc/
-COPY --from=build /usr/local/bin/dumb-init /usr/local/bin/dumb-init
+COPY --from=build /root/.composer/ /root/.composer/
 # take composer from official composer imsage
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
@@ -117,9 +119,6 @@ RUN chmod +x -R /usr/local/bin
 RUN mkdir -p /var/run/sshd
 RUN chmod 0755 -R /var/run/sshd
 
-# install plugin to make composer installs faaaaaaast
-RUN composer global require hirak/prestissimo --no-plugins --no-scripts
-
 # just see some info 'round (and also see if PHP binary is ok)
 RUN \
     php -v && \
@@ -130,6 +129,4 @@ WORKDIR /var/www
 
 EXPOSE 9000
 
-# define entrypoint for dumb-init and PHP-FPM as a default
-ENTRYPOINT ["dumb-init", "--"]
-CMD ["docker-entrypoint.sh"]
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]
