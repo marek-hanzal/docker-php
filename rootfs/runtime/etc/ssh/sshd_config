@@ -71,11 +71,4 @@ PidFile /config/sshd.pid
 #Banner none
 
 # override default of no subsystems
-Subsystem       sftp    /usr/lib/ssh/sftp-server
-
-# Example of overriding settings on a per-user basis
-#Match User anoncvs
-#       X11Forwarding no
-#       AllowTcpForwarding no
-#       PermitTTY no
-#       ForceCommand cvs server
+Subsystem       sftp    internal-sftp
