@@ -5,8 +5,7 @@ ENV \
     DEBIAN_FRONTEND=noninteractive \
     OPENSSL_VERSION=1.0.2u \
     PHP_INI_DIR=/usr/local/etc/php \
-    PHP_VERSION=5.3.29 \
-    ENABLE_XDEBUG=false
+    PHP_VERSION=5.3.29
 
 # install all required packages for PHP
 RUN \
