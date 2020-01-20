@@ -4,7 +4,6 @@ Simple PHP docker image.
 Services are controlled with `supervisord`.
 
 - Nginx running on port `80`
-- PHP-FPM running on port `9000`
 - OpenSSHH server running on port `22`
     - login with `root:1234`
 
