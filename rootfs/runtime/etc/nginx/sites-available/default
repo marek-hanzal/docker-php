@@ -8,10 +8,6 @@ server {
         root /usr/share/nginx/html;
     }
 
-#    location ~* \.php$ {
-#        try_files $uri @php;
-#    }
-
     location / {
         include                     fastcgi_params;
         fastcgi_index               index.php;
