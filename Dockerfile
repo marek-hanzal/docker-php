@@ -77,7 +77,7 @@ RUN \
 RUN mkdir -p /usr/local/etc/php/conf.d/
 
 # add all required files for the image (configurations, ...)
-ADD rootfs/ /
+ADD rootfs/build /
 
 RUN chmod +x -R /usr/local/bin
 
@@ -90,13 +90,12 @@ RUN docker-php-ext-install \
 # start a new, clean stage (without any heavy dependency)
 FROM debian:jessie as runtime
 
-ADD rootfs/ /
-
 # install just required dependencies to keep the image as light as possible
 RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \
-        ca-certificates curl libpcre3 librecode0 libmysqlclient-dev libsqlite3-0 libxml2 git zip unzip bzip2 \
+        ca-certificates curl nginx openssh-server \
+        libpcre3 librecode0 libmysqlclient-dev libsqlite3-0 libxml2 git zip unzip bzip2 \
         libpq-dev libicu-dev libgmp-dev libmcrypt-dev
 
 # take built binaries from build
@@ -109,8 +108,18 @@ COPY --from=build /usr/local/bin/dumb-init /usr/local/bin/dumb-init
 # take composer from official composer imsage
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
+ADD rootfs/runtime /
+
+RUN echo 'root:1234' | chpasswd
+RUN chmod 600 -R /etc/ssh
+RUN chmod 600 -R /root/.ssh
+RUN chmod +x -R /usr/local/bin
+RUN mkdir -p /var/run/sshd
+RUN chmod 0755 -R /var/run/sshd
+
 # install plugin to make composer installs faaaaaaast
 RUN composer global require hirak/prestissimo --no-plugins --no-scripts
+
 # just see some info 'round (and also see if PHP binary is ok)
 RUN \
     php -v && \
@@ -123,4 +132,4 @@ EXPOSE 9000
 
 # define entrypoint for dumb-init and PHP-FPM as a default
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["php-fpm"]
+CMD ["docker-entrypoint.sh"]
