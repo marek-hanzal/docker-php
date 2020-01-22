@@ -3,7 +3,8 @@
     Installed:
     - composer
     - composer plugin for faster downloads: hirak/prestissimo
-    - xdebug (global script *php-xdebug-enable* and *php-xdebug-disable* available); disabled by default
+    - xdebug (global script *php-enable-xdebug* and *php-disable-xdebug* available); disabled by default
+    - opcache (php-enable-opcache and php-disable-opcache); disabled by default
 
     Have a nice day :)!
 
