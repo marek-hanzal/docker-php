@@ -1,33 +1,13 @@
-FROM debian as build
+FROM marekhanzal/buildbian as build
 
-# setup mandatory environment variables (optimized for PHP 5.3)
+# setup mandatory environment variables
 ENV \
-    DEBIAN_FRONTEND=noninteractive \
     PHP_INI_DIR=/usr/local/etc/php \
-    PHP_VERSION=7.4.1 \
-    ENABLE_XDEBUG=false \
-    ENABLE_OPCACHE=false
-
-RUN \
-    apt-get update && \
-    apt-get install -y --no-install-recommends --no-install-suggests \
-        ca-certificates curl xz-utils zip unzip python-pip bzip2 \
-        autoconf file g++ gcc libc-dev make pkg-config re2c
-
-# install dumb-init as it goes from PIP (thus part of build, because pip with python is quite heavy)
-RUN pip install dumb-init
+    PHP_VERSION=7.2.26
 
 WORKDIR /usr/src
 RUN \
-    curl -SL "https://php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror" -o php.tar.xz && \
-    curl -SL "https://php.net/get/php-$PHP_VERSION.tar.xz.asc/from/this/mirror" -o php.tar.xz.asc && \
-    tar -Jxf php.tar.xz --strip-components=1
-
-RUN \
-    apt-get update && \
-    apt-get install -y --no-install-recommends --no-install-suggests \
-        libxml2-dev libssl-dev libsqlite3-dev zlib1g-dev libbz2-dev libcurl4-openssl-dev libonig-dev \
-        libpq-dev libreadline-dev libzip-dev libgmp-dev libldap2-dev
+    curl -SL "https://php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror" | tar -Jx --strip-components=1
 
 # download and build PHP
 WORKDIR /usr/src
@@ -45,7 +25,7 @@ RUN \
 		--with-curl \
 		--enable-bcmath \
 		--with-bz2 \
-		--with-zip \
+		--enable-zip \
 		--enable-soap \
 		--with-pear \
 		--enable-phar \
@@ -53,32 +33,36 @@ RUN \
 		--enable-intl \
 		--enable-sockets \
 		--enable-mbstring \
-		--with-openssl=/usr/local/ssl \
+		--with-openssl \
 		--with-readline \
 		--with-zlib \
+		--with-libzip \
 		--with-ldap \
 	&& make -j"$(nproc)" \
 	&& make install
 
 RUN mkdir -p /usr/local/etc/php/conf.d/
-
 RUN chmod +x -R /usr/local/bin
 
 RUN pecl install xdebug
 
 # add all required files for the image (configurations, ...)
-ADD rootfs/ /
+ADD rootfs/build /
+
+# take composer from official composer imsage
+COPY --from=composer /usr/bin/composer /usr/local/bin/composer
+
+# install plugin to make composer installs faaaaaaast
+RUN composer global require hirak/prestissimo --no-plugins --no-scripts
 
 # start a new, clean stage (without any heavy dependency)
-FROM debian as runtime
-
-ADD rootfs/ /
+FROM marekhanzal/debian as runtime
 
 # install just required dependencies to keep the image as light as possible
 RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \
-        ca-certificates curl git \
+        nginx openssh-server \
         libreadline-dev libpq-dev libxml2-dev libonig-dev libsqlite3-dev libzip-dev libldap2-dev
 
 # take built binaries from build
@@ -87,23 +71,23 @@ COPY --from=build /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
 COPY --from=build /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY --from=build /usr/local/lib/php/ /usr/local/lib/php/
 COPY --from=build /usr/local/etc/ /usr/local/etc/
-COPY --from=build /usr/local/bin/dumb-init /usr/local/bin/dumb-init
+COPY --from=build /root/.composer/ /root/.composer/
 # take composer from official composer imsage
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
+
+ADD rootfs/runtime /
+
+RUN echo 'root:1234' | chpasswd
+RUN chmod 600 -R /etc/ssh
+RUN chmod 600 -R /root/.ssh
+RUN chmod +x -R /usr/local/bin
+RUN mkdir -p /var/run/sshd
+RUN chmod 0755 -R /var/run/sshd
 
 # just see some info 'round (and also see if PHP binary is ok)
 RUN \
     php -v && \
     php -m
 
-# install plugin to make composer installs faaaaaaast
-RUN composer global require hirak/prestissimo --no-plugins --no-scripts
-
 # defualt work directory for an application
 WORKDIR /var/www
-
-EXPOSE 9000
-
-# define entrypoint for dumb-init and PHP-FPM as a default
-ENTRYPOINT ["dumb-init", "--"]
-CMD ["php-fpm"]
