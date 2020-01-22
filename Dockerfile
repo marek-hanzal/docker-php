@@ -77,12 +77,13 @@ COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
 ADD rootfs/runtime /
 
-RUN echo 'root:1234' | chpasswd
-RUN chmod 600 -R /etc/ssh
-RUN chmod 600 -R /root/.ssh
-RUN chmod +x -R /usr/local/bin
-RUN mkdir -p /var/run/sshd
-RUN chmod 0755 -R /var/run/sshd
+RUN \
+    echo 'root:1234' | chpasswd && \
+    chmod 600 -R /etc/ssh && \
+    chmod 600 -R /root/.ssh && \
+    chmod +x -R /usr/local/bin && \
+    mkdir -p /var/run/sshd && \
+    chmod 0755 -R /var/run/sshd
 
 # just see some info 'round (and also see if PHP binary is ok)
 RUN \
