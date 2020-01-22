@@ -1,3 +1,4 @@
+
     Welcome to base PHP image with Nginx!
 
     Installed:
@@ -10,3 +11,4 @@
 
     P.S. You can cat private key for access this container through SSH:
     cat /root/.ssh/id_rsa
+
