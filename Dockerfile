@@ -88,7 +88,8 @@ RUN \
 # just see some info 'round (and also see if PHP binary is ok)
 RUN \
     php -v && \
-    php -m
+    php -m && \
+    nginx -t
 
 # defualt work directory for an application
 WORKDIR /var/www
