@@ -3,11 +3,11 @@ FROM marekhanzal/buildbian as build
 # setup mandatory environment variables
 ENV \
     PHP_INI_DIR=/usr/local/etc/php \
-    PHP_VERSION=7.2.27
+    PHP_VERSION=7.2.30
 
 WORKDIR /usr/src
 RUN \
-    curl -SL "https://php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror" | tar -Jx --strip-components=1
+    curl -SLk "https://php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror" | tar -Jx --strip-components=1
 
 # download and build PHP
 WORKDIR /usr/src
@@ -28,6 +28,7 @@ RUN \
 		--enable-zip \
 		--enable-soap \
 		--with-pear \
+		--with-gd \
 		--enable-phar \
 		--with-gmp \
 		--enable-intl \
