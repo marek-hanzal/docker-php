@@ -3,7 +3,7 @@ FROM marekhanzal/buildbian as build
 # setup mandatory environment variables
 ENV \
     PHP_INI_DIR=/usr/local/etc/php \
-    PHP_VERSION=7.2.31
+    PHP_VERSION=7.2.33
 
 WORKDIR /usr/src
 RUN \
@@ -22,6 +22,7 @@ RUN \
 		--disable-phar \
 		--with-pdo_mysql \
 		--with-pdo_pgsql \
+		--with-mysqli \
 		--with-curl \
 		--enable-bcmath \
 		--with-bz2 \
