@@ -54,9 +54,6 @@ ADD rootfs/build /
 # take composer from official composer imsage
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
-# install plugin to make composer installs faaaaaaast
-RUN composer global require hirak/prestissimo --no-plugins --no-scripts
-
 # start a new, clean stage (without any heavy dependency)
 FROM marekhanzal/debian as runtime
 
@@ -73,7 +70,6 @@ COPY --from=build /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
 COPY --from=build /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY --from=build /usr/local/lib/php/ /usr/local/lib/php/
 COPY --from=build /usr/local/etc/ /usr/local/etc/
-COPY --from=build /root/.composer/ /root/.composer/
 # take composer from official composer imsage
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
