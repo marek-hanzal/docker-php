@@ -3,7 +3,7 @@ FROM marekhanzal/buildbian as build
 # setup mandatory environment variables
 ENV \
     PHP_INI_DIR=/usr/local/etc/php \
-    PHP_VERSION=7.4.14
+    PHP_VERSION=7.4.15
 
 WORKDIR /usr/src
 RUN \
@@ -30,6 +30,7 @@ RUN \
 		--enable-soap \
 		--with-pear \
 		--with-gd \
+		--enable-gd \
 		--enable-phar \
 		--with-gmp \
 		--enable-intl \
