@@ -30,6 +30,7 @@ RUN \
 		--enable-soap \
 		--with-pear \
 		--with-gd \
+		--enable-gd \
 		--enable-phar \
 		--with-gmp \
 		--enable-intl \
