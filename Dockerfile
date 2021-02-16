@@ -12,6 +12,8 @@ RUN \
 # download and build PHP
 WORKDIR /usr/src
 RUN \
+    ./configure --help
+RUN \
     ./configure \
 		--with-config-file-path="$PHP_INI_DIR" \
 		--with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
@@ -19,28 +21,47 @@ RUN \
 		--with-fpm-user=www-data \
 		--with-fpm-group=www-data \
 		--disable-cgi \
-		--disable-phar \
 		--with-pdo_mysql \
 		--with-pdo_pgsql \
 		--with-mysqli \
+		--enable-shmop \
 		--with-curl \
-		--enable-bcmath \
 		--with-bz2 \
-		--enable-zip \
+		--enable-dba \
+		--with-enchant \
+		--enable-exif \
+		--with-ffi \
+		--enable-ftp \
 		--enable-soap \
 		--with-pear \
-		--with-gd \
 		--enable-gd \
+		--with-webp \
+		--with-jpeg \
+		--with-xpm \
+		--with-freetype \
+		--enable-gd-jis-conv \
+		--with-gettext \
 		--enable-phar \
 		--with-gmp \
+		--with-imap \
+		--with-imap-ssl \
+		--with-mhash \
 		--enable-intl \
 		--enable-sockets \
+		--with-sodium \
+		--with-password-argon2 \
+		--with-xsl \
+		--with-zip \
 		--enable-mbstring \
 		--with-openssl \
+		--with-kerberos \
+		--with-system-ciphers \
+		--enable-bcmath \
+		--enable-calendar \
 		--with-readline \
 		--with-zlib \
-		--with-libzip \
 		--with-ldap \
+		--with-ldap-sasl \
 	&& make -j"$(nproc)" \
 	&& make install
 
