@@ -24,13 +24,12 @@ RUN \
 		--with-pdo_mysql \
 		--with-pdo_pgsql \
 		--with-mysqli \
+		--with-kerberos \
 		--enable-shmop \
 		--with-curl \
 		--with-bz2 \
 		--enable-dba \
-		--with-enchant \
 		--enable-exif \
-		--with-ffi \
 		--enable-ftp \
 		--enable-soap \
 		--with-pear \
@@ -38,7 +37,6 @@ RUN \
 		--with-webp \
 		--with-jpeg \
 		--with-xpm \
-		--with-freetype \
 		--enable-gd-jis-conv \
 		--with-gettext \
 		--enable-phar \
@@ -54,7 +52,6 @@ RUN \
 		--with-zip \
 		--enable-mbstring \
 		--with-openssl \
-		--with-kerberos \
 		--with-system-ciphers \
 		--enable-bcmath \
 		--enable-calendar \
@@ -63,7 +60,9 @@ RUN \
 		--with-ldap \
 		--with-ldap-sasl \
 	&& make -j"$(nproc)" \
-	&& make install
+	&& make install \
+	&& /usr/src/build/shtool install -c ext/phar/phar.phar /usr/local/bin/phar.phar \
+	&& ln -s -f phar.phar /usr/local/bin/phar
 
 RUN mkdir -p /usr/local/etc/php/conf.d/
 RUN chmod +x -R /usr/local/bin
