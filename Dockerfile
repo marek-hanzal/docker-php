@@ -12,6 +12,8 @@ RUN \
 # download and build PHP
 WORKDIR /usr/src
 RUN \
+    ./configure --help
+RUN \
     ./configure \
 		--with-config-file-path="$PHP_INI_DIR" \
 		--with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
@@ -19,30 +21,48 @@ RUN \
 		--with-fpm-user=www-data \
 		--with-fpm-group=www-data \
 		--disable-cgi \
-		--disable-phar \
 		--with-pdo_mysql \
 		--with-pdo_pgsql \
 		--with-mysqli \
+		--with-kerberos \
+		--enable-shmop \
 		--with-curl \
-		--enable-bcmath \
 		--with-bz2 \
-		--enable-zip \
+		--enable-dba \
+		--enable-exif \
+		--enable-ftp \
 		--enable-soap \
 		--with-pear \
-		--with-gd \
 		--enable-gd \
+		--with-webp \
+		--with-jpeg \
+		--with-xpm \
+		--enable-gd-jis-conv \
+		--with-gettext \
 		--enable-phar \
 		--with-gmp \
+		--with-imap \
+		--with-imap-ssl \
+		--with-mhash \
 		--enable-intl \
 		--enable-sockets \
+		--with-sodium \
+		--with-password-argon2 \
+		--with-xsl \
+		--with-zip \
 		--enable-mbstring \
 		--with-openssl \
+		--with-system-ciphers \
+		--enable-bcmath \
+		--enable-calendar \
 		--with-readline \
 		--with-zlib \
-		--with-libzip \
 		--with-ldap \
+		--with-ldap-sasl \
 	&& make -j"$(nproc)" \
-	&& make install
+	&& make install \
+	&& /usr/src/build/shtool install -c ext/phar/phar.phar /usr/local/bin/phar.phar \
+	&& ln -s -f phar.phar /usr/local/bin/phar
 
 RUN mkdir -p /usr/local/etc/php/conf.d/
 RUN chmod +x -R /usr/local/bin
@@ -63,7 +83,9 @@ RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \
         nginx openssh-server \
-        libreadline-dev libpq-dev libxml2-dev libonig-dev libsqlite3-dev libzip-dev libldap2-dev
+        libreadline-dev libpq-dev libxml2-dev libonig-dev libsqlite3-dev libzip-dev libldap2-dev libpng-dev \
+        libc-client-dev libkrb5-dev libsasl2-dev libsodium-dev libargon2-dev libxslt-dev libwebp-dev \
+        libjpeg-dev libxpm-dev
 
 # take built binaries from build
 COPY --from=build /usr/local/bin/php /usr/local/bin/php
