@@ -33,11 +33,7 @@ RUN \
 		--enable-ftp \
 		--enable-soap \
 		--with-pear \
-		--enable-gd \
-		--with-webp \
-		--with-jpeg \
-		--with-xpm \
-		--enable-gd-jis-conv \
+		--with-gd \
 		--with-gettext \
 		--enable-phar \
 		--with-gmp \
@@ -49,7 +45,7 @@ RUN \
 		--with-sodium \
 		--with-password-argon2 \
 		--with-xsl \
-		--with-zip \
+		--enable-zip \
 		--enable-mbstring \
 		--with-openssl \
 		--with-system-ciphers \
