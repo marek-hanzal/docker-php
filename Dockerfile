@@ -76,12 +76,13 @@ FROM marekhanzal/debian as runtime
 
 # install just required dependencies to keep the image as light as possible
 RUN \
+    curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
     apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \
         nginx openssh-server \
         libreadline-dev libpq-dev libxml2-dev libonig-dev libsqlite3-dev libzip-dev libldap2-dev libpng-dev \
         libc-client-dev libkrb5-dev libsasl2-dev libsodium-dev libargon2-dev libxslt-dev libwebp-dev \
-        libjpeg-dev libxpm-dev
+        libjpeg-dev libxpm-dev nodejs
 
 # take built binaries from build
 COPY --from=build /usr/local/bin/php /usr/local/bin/php
@@ -106,7 +107,9 @@ RUN \
 RUN \
     php -v && \
     php -m && \
-    nginx -t
+    nginx -t && \
+    node -v && \
+    npm -v
 
 # defualt work directory for an application
 WORKDIR /var/www
