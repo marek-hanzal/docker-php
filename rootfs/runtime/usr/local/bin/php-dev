@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+mv /usr/local/etc/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini.disabled
+mv /usr/local/etc/php/conf.d/xdebug.ini.disabled /usr/local/etc/php/conf.d/xdebug.ini
+php -v
+supervisorctl restart php-fpm
