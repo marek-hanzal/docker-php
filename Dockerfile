@@ -3,7 +3,7 @@ FROM marekhanzal/buildbian as build
 # setup mandatory environment variables
 ENV \
     PHP_INI_DIR=/usr/local/etc/php \
-    PHP_VERSION=8.0.2
+    PHP_VERSION=8.1.0
 
 WORKDIR /usr/src
 RUN \
