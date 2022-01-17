@@ -68,6 +68,7 @@ RUN mkdir -p /usr/local/etc/php/conf.d/
 RUN chmod +x -R /usr/local/bin
 
 RUN pecl install xdebug
+RUN pecl install memcached
 
 # add all required files for the image (configurations, ...)
 ADD rootfs/build /
@@ -85,7 +86,7 @@ RUN \
     apt-get install -y --no-install-recommends --no-install-suggests \
         nginx openssh-server \
         libreadline-dev libpq-dev libxml2-dev libonig-dev libsqlite3-dev libzip-dev libldap2-dev libpng-dev \
-        libc-client-dev libkrb5-dev libsasl2-dev libsodium-dev libargon2-dev libxslt-dev libwebp-dev \
+        libc-client-dev libkrb5-dev libsasl2-dev libmemcached-dev libsodium-dev libargon2-dev libxslt-dev libwebp-dev \
         libjpeg-dev libxpm-dev nodejs
 
 # take built binaries from build
