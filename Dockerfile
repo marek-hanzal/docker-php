@@ -1,4 +1,4 @@
-FROM marekhanzal/buildbian as build
+FROM marekhanzal/debian as build
 
 # setup mandatory environment variables
 ENV \
