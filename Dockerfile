@@ -69,6 +69,7 @@ RUN chmod +x -R /usr/local/bin
 
 RUN pecl install xdebug
 RUN pecl install imagick
+RUN pecl install memcached
 
 # add all required files for the image (configurations, ...)
 ADD rootfs/build /
