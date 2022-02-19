@@ -113,3 +113,5 @@ RUN \
 
 # defualt work directory for an application
 WORKDIR /var/www
+
+RUN mkdir .session && chmod 777 .session
