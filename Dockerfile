@@ -1,4 +1,4 @@
-FROM marekhanzal/buildbian as build
+FROM marekhanzal/debian as build
 
 # setup mandatory environment variables
 ENV \
@@ -76,7 +76,7 @@ FROM marekhanzal/debian as runtime
 
 # install just required dependencies to keep the image as light as possible
 RUN \
-    curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
+    curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
     apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \
         nginx openssh-server \
