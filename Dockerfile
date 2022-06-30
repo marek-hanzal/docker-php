@@ -3,7 +3,7 @@ FROM marekhanzal/debian as build
 # setup mandatory environment variables
 ENV \
     PHP_INI_DIR=/usr/local/etc/php \
-    PHP_VERSION=7.2.33
+    PHP_VERSION=7.2.34
 
 WORKDIR /usr/src
 RUN \
