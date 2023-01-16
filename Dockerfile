@@ -1,9 +1,9 @@
-FROM marekhanzal/buildbian as build
+FROM marekhanzal/debian as build
 
 # setup mandatory environment variables
 ENV \
     PHP_INI_DIR=/usr/local/etc/php \
-    PHP_VERSION=8.1.1
+    PHP_VERSION=8.1.8
 
 WORKDIR /usr/src
 RUN \
@@ -81,7 +81,7 @@ FROM marekhanzal/debian as runtime
 
 # install just required dependencies to keep the image as light as possible
 RUN \
-    curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
+    curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
     apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \
         nginx openssh-server \
