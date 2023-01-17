@@ -87,7 +87,7 @@ RUN \
         nginx openssh-server \
         libreadline-dev libpq-dev libxml2-dev libonig-dev libsqlite3-dev libzip-dev libldap2-dev libpng-dev \
         libc-client-dev libkrb5-dev libsasl2-dev libmemcached-dev libsodium-dev libargon2-dev libxslt-dev libwebp-dev \
-        libjpeg-dev libxpm-dev nodejs
+        libjpeg-dev libxpm-dev nodejs patch cron msmtp procps libfcgi0ldbl libc-client2007e-dev zlib1g-dev
 
 # take built binaries from build
 COPY --from=build /usr/local/bin/php /usr/local/bin/php
