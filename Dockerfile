@@ -64,7 +64,7 @@ RUN \
 RUN mkdir -p /usr/local/etc/php/conf.d/
 RUN chmod +x -R /usr/local/bin
 
-RUN pecl install xdebug-3.1
+RUN pecl channel-update pecl.php.net && pecl install xdebug-3.1
 
 # add all required files for the image (configurations, ...)
 ADD rootfs/build /
