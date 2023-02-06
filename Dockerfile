@@ -63,8 +63,6 @@ RUN \
 RUN mkdir -p /usr/local/etc/php/conf.d/
 RUN chmod +x -R /usr/local/bin
 
-RUN pecl install xdebug
-
 # add all required files for the image (configurations, ...)
 ADD rootfs/build /
 
@@ -82,7 +80,7 @@ RUN \
         nginx openssh-server \
         libreadline-dev libpq-dev libxml2-dev libonig-dev libsqlite3-dev libzip-dev libldap2-dev libpng-dev \
         libc-client-dev libkrb5-dev libsasl2-dev libsodium-dev libargon2-dev libxslt-dev libwebp-dev \
-        libjpeg-dev libxpm-dev nodejs
+        libjpeg-dev libxpm-dev nodejs php-xdebug
 
 # take built binaries from build
 COPY --from=build /usr/local/bin/php /usr/local/bin/php
