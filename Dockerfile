@@ -60,8 +60,11 @@ RUN \
 	&& /usr/src/build/shtool install -c ext/phar/phar.phar /usr/local/bin/phar.phar \
 	&& ln -s -f phar.phar /usr/local/bin/phar
 
+
 RUN mkdir -p /usr/local/etc/php/conf.d/
 RUN chmod +x -R /usr/local/bin
+
+RUN pecl install xdebug-3.1
 
 # add all required files for the image (configurations, ...)
 ADD rootfs/build /
