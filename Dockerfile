@@ -74,7 +74,6 @@ FROM marekhanzal/debian as runtime
 
 # install just required dependencies to keep the image as light as possible
 RUN \
-    curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
     apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \
         nginx openssh-server \
