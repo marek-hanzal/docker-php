@@ -1,16 +1,18 @@
-FROM marekhanzal/buildbian as build
+FROM marekhanzal/debian as build
 
 # setup mandatory environment variables
 ENV \
     PHP_INI_DIR=/usr/local/etc/php \
-    PHP_VERSION=7.3.14
+    PHP_VERSION=7.3.33
 
 WORKDIR /usr/src
 RUN \
-    curl -SL "https://php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror" | tar -Jx --strip-components=1
+    curl -SLk "https://php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror" | tar -Jx --strip-components=1
 
 # download and build PHP
 WORKDIR /usr/src
+RUN \
+    ./configure --help
 RUN \
     ./configure \
 		--with-config-file-path="$PHP_INI_DIR" \
@@ -19,41 +21,56 @@ RUN \
 		--with-fpm-user=www-data \
 		--with-fpm-group=www-data \
 		--disable-cgi \
-		--disable-phar \
 		--with-pdo_mysql \
 		--with-pdo_pgsql \
+		--with-mysqli \
+		--with-kerberos \
+		--enable-shmop \
 		--with-curl \
-		--enable-bcmath \
 		--with-bz2 \
-		--enable-zip \
+		--enable-dba \
+		--enable-exif \
+		--enable-ftp \
 		--enable-soap \
 		--with-pear \
+		--with-gd \
+		--with-gettext \
 		--enable-phar \
 		--with-gmp \
+		--with-imap \
+		--with-imap-ssl \
+		--with-mhash \
 		--enable-intl \
 		--enable-sockets \
+		--with-sodium \
+		--with-password-argon2 \
+		--with-xsl \
+		--enable-zip \
 		--enable-mbstring \
 		--with-openssl \
+		--with-system-ciphers \
+		--enable-bcmath \
+		--enable-calendar \
 		--with-readline \
 		--with-zlib \
-		--with-libzip \
 		--with-ldap \
+		--with-ldap-sasl \
 	&& make -j"$(nproc)" \
-	&& make install
+	&& make install \
+	&& /usr/src/build/shtool install -c ext/phar/phar.phar /usr/local/bin/phar.phar \
+	&& ln -s -f phar.phar /usr/local/bin/phar
+
 
 RUN mkdir -p /usr/local/etc/php/conf.d/
 RUN chmod +x -R /usr/local/bin
 
-RUN pecl install xdebug
+RUN pecl channel-update pecl.php.net && pecl install xdebug-3.1.6
 
 # add all required files for the image (configurations, ...)
 ADD rootfs/build /
 
 # take composer from official composer imsage
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
-
-# install plugin to make composer installs faaaaaaast
-RUN composer global require hirak/prestissimo --no-plugins --no-scripts
 
 # start a new, clean stage (without any heavy dependency)
 FROM marekhanzal/debian as runtime
@@ -63,7 +80,9 @@ RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends --no-install-suggests \
         nginx openssh-server \
-        libreadline-dev libpq-dev libxml2-dev libonig-dev libsqlite3-dev libzip-dev libldap2-dev
+        libreadline-dev libpq-dev libxml2-dev libonig-dev libsqlite3-dev libzip-dev libldap2-dev libpng-dev \
+        libc-client-dev libkrb5-dev libsasl2-dev libsodium-dev libargon2-dev libxslt-dev libwebp-dev \
+        libjpeg-dev libxpm-dev nodejs php-xdebug
 
 # take built binaries from build
 COPY --from=build /usr/local/bin/php /usr/local/bin/php
@@ -71,23 +90,26 @@ COPY --from=build /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
 COPY --from=build /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY --from=build /usr/local/lib/php/ /usr/local/lib/php/
 COPY --from=build /usr/local/etc/ /usr/local/etc/
-COPY --from=build /root/.composer/ /root/.composer/
 # take composer from official composer imsage
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
 ADD rootfs/runtime /
 
-RUN echo 'root:1234' | chpasswd
-RUN chmod 600 -R /etc/ssh
-RUN chmod 600 -R /root/.ssh
-RUN chmod +x -R /usr/local/bin
-RUN mkdir -p /var/run/sshd
-RUN chmod 0755 -R /var/run/sshd
+RUN \
+    echo 'root:1234' | chpasswd && \
+    chmod 600 -R /etc/ssh && \
+    chmod 600 -R /root/.ssh && \
+    chmod +x -R /usr/local/bin && \
+    mkdir -p /var/run/sshd && \
+    chmod 0755 -R /var/run/sshd
 
 # just see some info 'round (and also see if PHP binary is ok)
 RUN \
     php -v && \
-    php -m
+    php -m && \
+    nginx -t && \
+    node -v && \
+    npm -v
 
 # defualt work directory for an application
 WORKDIR /var/www

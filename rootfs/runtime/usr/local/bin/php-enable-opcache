@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-
-mv /usr/local/etc/php/conf.d/opcache.ini.disabled /usr/local/etc/php/conf.d/opcache.ini

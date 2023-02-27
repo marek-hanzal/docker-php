@@ -2,6 +2,7 @@ server {
     listen 80;
     server_name  _;
     root /var/www/public;
+    client_max_body_size 1G;
 
     error_page  502 503 504  /50x.html;
     location = /50x.html {
@@ -15,7 +16,8 @@ server {
     }
 
     location / {
-        try_files $uri @php;
+        index index.php;
+        try_files $uri $uri.html $uri/ @php;
     }
 
     location @php {
